@@ -1,0 +1,52 @@
+create table student 
+(SNO varchar(10),
+SNAME varchar(30),
+Sage Int);
+
+create table student_log(
+who varchar(30),
+whattime TIMESTAMP);
+select * from student_log;
+
+use test;
+Create  trigger audit_student
+Before insert On student
+For each row
+	Begin
+		Insert into student_log(Who,whattime) Values
+ (current_user,current_timestamp);
+	End;
+
+Insert into student values ('1992150033','吴思远',40);
+
+select * from student_log;
+
+alter table student_log add (action varchar(20));
+
+Insert into student values ('2012644123','梁非凡',20);
+
+select * from student_log;
+
+use test;
+Create  trigger audit_student_update
+Before update On student
+For each row
+	Begin
+		Insert into student_log(Who,whattime,action) Values
+ (current_user,current_timestamp,'更新');
+	End;
+
+UPDATE student
+set sage=sage+1;
+
+use test;
+Create  trigger audit_student_delete
+Before delete On student
+For each row
+	Begin
+		Insert into student_log(Who,whattime,action) Values
+ (current_user,current_timestamp,'删除');
+	End;
+
+DELETE from student
+where sage=41;
